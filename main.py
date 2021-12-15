@@ -1,10 +1,10 @@
 import pygame
-import time
+import os
 
 pygame.init()
 #window size
-display_width = 800
-display_height = 600
+display_width = 900
+display_height = 500
 
 black = (0, 0, 0)
 white = (255, 255, 255)
@@ -13,87 +13,22 @@ green = (0, 200, 0)
 bright_red = (255, 0, 0)
 bright_green = (0, 255, 0)
 
+FPS = 60
+
+CHASE_LOGO_IMAGE = pygame.image.load(
+    os.path.join('Assets', 'chase_logo.png'))
+CHASE_LOGO = pygame.transform.scale(CHASE_LOGO_IMAGE, (300, 200))
+
 gameDisplay = pygame.display.set_mode((display_width, display_height))
-#title
 pygame.display.set_caption('The Chase')
-#measure FPS
-clock = pygame.time.Clock()
 
-def text_objects(text, font):
-    textSurface = font.render(text, True, black)
-    return textSurface, textSurface.get_rect()
-
-def message_display(text):
-    largeText = pygame.font.Font('freesansbold.ttf',115)
-    TextSurf, TextRect = text_objects(text, largeText)
-    TextRect.center = ((display_width/2),(display_height/2))
-    gameDisplay.blit(TextSurf, TextRect)
-
+def draw_window():
+    gameDisplay.fill(red)
+    gameDisplay.blit(CHASE_LOGO, (300, 100))
+    button("Start Game!",150,450,100,50,green,bright_green,game_loop)
+    button("Quit",550,450,100,50,red,bright_red,pygame.QUIT)
     pygame.display.update()
-
-    time.sleep(2)
-
-    game_loop()
-
-def game_loop():
     
-    gameExit = False
-    while not gameExit:
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                quit()
-        
-        counter, text = 10, '10'.rjust(3)
-        pygame.time.set_timer(pygame.USEREVENT, 1000)
-        font = pygame.font.SysFont('Consolas', 30)
-
-        run = True
-        while run:
-            for e in pygame.event.get():
-                if e.type == pygame.USEREVENT: 
-                    counter -= 1
-                    text = str(counter).rjust(3) if counter > 0 else 'boom!'
-                if e.type == pygame.QUIT: 
-                    run = False 
-    
-        pygame.display.update()
-        clock.tick(60)
-        
-        
-        
-def crash():
-    message_display('You Crashed')
-
-def quitgame():
-    pygame.quit()
-    quit()
-    
-def game_intro():
-
-    intro = True
-
-    while intro:
-        for event in pygame.event.get():
-            #print(event)
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                quit()
-                
-        gameDisplay.fill(white)
-        largeText = pygame.font.SysFont("comicsansms",115)
-        TextSurf, TextRect = text_objects("The Spanish Chase", largeText)
-        TextRect.center = ((display_width/2),(display_height/2))
-        gameDisplay.blit(TextSurf, TextRect)
-
-        # if GO is pressed - activate game 
-        button("Start Game!",150,450,100,50,green,bright_green,game_loop)
-        button("Quit",550,450,100,50,red,bright_red,pygame.QUIT)
-
-        pygame.display.update()
-        clock.tick(15)
-
 def button(msg,x,y,w,h,ic,ac,action=None):
     mouse = pygame.mouse.get_pos()
     click = pygame.mouse.get_pressed()
@@ -110,11 +45,39 @@ def button(msg,x,y,w,h,ic,ac,action=None):
     textSurf, textRect = text_objects(msg, smallText)
     textRect.center = ( (x+(w/2)), (y+(h/2)) )
     gameDisplay.blit(textSurf, textRect)
+
+def text_objects(text, font):
+    textSurface = font.render(text, True, black)
+    return textSurface, textSurface.get_rect()
+
+
+def game_loop():
+    gameDisplay.fill(white)
+    clock = pygame.time.Clock()
+    gameExit = False
+    while not gameExit:
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+
     
-    
-           
-# if user quits game, stop.
-game_intro()
-game_loop()
-pygame.quit()
-quit()
+        pygame.display.update()
+        clock.tick(60)
+        
+def main():
+    clock = pygame.time.Clock()
+    run = True
+    while run:
+        clock.tick(FPS)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+                
+        draw_window()
+        
+    pygame.quit()
+
+if __name__ == "__main__":
+    main() 
